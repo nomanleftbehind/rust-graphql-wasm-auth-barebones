@@ -1,0 +1,31 @@
+[package]
+edition = "2021"
+name = "emissionsapp"
+version = "1.0.0"
+
+[lib]
+path = "src/lib.rs"
+
+[[bin]]
+path = "src/main.rs"
+name = "emissionsapp"
+
+[dependencies]
+actix = "0.13"
+actix-cors = "0.6"
+actix-web = "4"
+actix-web-lab = "0.16"
+
+async-graphql = {version = "4", features = ["default", "dataloader", "time", "tracing", "uuid"]}
+async-graphql-actix-web = "4"
+
+env_logger = "0.9"
+log = "0.4"
+
+sqlx = {version = "0.6", features = ["runtime-tokio-rustls", "postgres", "time", "uuid"]}
+serde = { version = "1", features = ["derive"] }
+config = "0.13"
+tracing = "0.1"
+uuid = { version = "1.1", features = ["serde", "v4"] }
+itertools = "0.10.3"
+tokio = "1.21.0"
