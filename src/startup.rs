@@ -1,5 +1,8 @@
 use crate::configuration::{DatabaseSettings, Settings};
-use crate::gql::{dataloaders::PostLoader, QueryRoot, SchemaRoot};
+use crate::gql::{
+    dataloaders::{PostLoader, UserLoader},
+    QueryRoot, SchemaRoot,
+};
 use actix_cors::Cors;
 use actix_session::{storage::RedisSessionStore, SessionMiddleware};
 use actix_web::{
@@ -132,6 +135,10 @@ pub async fn run(
         // .data(SessionCookieName(configuration.session_cookie_name.clone()))
         .data(DataLoader::new(
             PostLoader::new(db_pool.clone()),
+            tokio::spawn,
+        ))
+        .data(DataLoader::new(
+            UserLoader::new(db_pool.clone()),
             tokio::spawn,
         ))
         .data(db_pool.clone())

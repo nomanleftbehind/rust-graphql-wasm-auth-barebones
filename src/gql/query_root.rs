@@ -1,17 +1,14 @@
-use actix_web::web::Data;
-use async_graphql::*;
-use sqlx::PgPool;
-
-pub struct QueryRoot;
-
-// use crate::core::session::UserCredential;
-
 use super::{
     // session::Session,
     sql::query_user,
     // topic,
     user::{User, UserBy},
 };
+use actix_web::web::Data;
+use async_graphql::*;
+use sqlx::PgPool;
+
+pub struct QueryRoot;
 
 #[Object]
 impl QueryRoot {

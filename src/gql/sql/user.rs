@@ -1,16 +1,10 @@
-// use sqlx::{postgres::PgRow, query, query_as, PgExecutor, Row};
-use sqlx::{query_as, PgExecutor};
-
-// use crate::core::session::UserCredential;
 use crate::gql::user::{User, UserBy};
-// use uuid::Uuid;
+use sqlx::{query_as, PgExecutor};
 
 pub async fn query_user<'e, E: PgExecutor<'e>>(
     pool: E,
-    // _cred: &UserCredential,
     by: UserBy,
 ) -> Result<Option<User>, sqlx::Error> {
-    println!("BY: === {:?}", &by);
     let user = match by {
         UserBy::Id(id) => {
             query_as(r#"SELECT id, email, password_hash, post_signature FROM "user" WHERE id = $1"#)
@@ -27,7 +21,6 @@ pub async fn query_user<'e, E: PgExecutor<'e>>(
             .await?
         }
     };
-    println!("USER: === {:?}", &user);
     Ok(user)
 }
 

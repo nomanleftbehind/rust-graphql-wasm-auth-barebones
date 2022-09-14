@@ -2,7 +2,7 @@ use crate::gql::dataloaders::PostLoader;
 use async_graphql::dataloader::DataLoader;
 use async_graphql::*;
 use serde::{Deserialize, Serialize};
-use sqlx::{postgres::PgRow, prelude::*};
+use sqlx::FromRow;
 use uuid::Uuid;
 
 use crate::gql::post::Post;
@@ -24,24 +24,13 @@ pub enum UserBy {
     Id(Uuid),
 }
 
-#[derive(Serialize, Deserialize, SimpleObject, Debug, Clone)]
+#[derive(Serialize, Deserialize, SimpleObject, Debug, Clone, FromRow)]
 #[graphql(complex)]
 pub struct User {
     pub id: Uuid,
     pub email: String,
     pub password_hash: String,
     pub post_signature: Option<String>,
-}
-
-impl<'r> FromRow<'r, PgRow> for User {
-    fn from_row(row: &'r PgRow) -> Result<Self, sqlx::Error> {
-        Ok(Self {
-            id: row.try_get("id")?,
-            email: row.try_get("email")?,
-            password_hash: row.try_get("password_hash")?,
-            post_signature: row.try_get("post_signature")?,
-        })
-    }
 }
 
 #[ComplexObject]
