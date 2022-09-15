@@ -1,8 +1,5 @@
-use crate::gql::{
-    dataloaders::{ContextExt, UserLoader},
-    post::dataloader::DataLoader,
-    user::User,
-};
+use crate::gql::context::ContextExt;
+use crate::gql::{dataloaders::UserLoader, post::dataloader::DataLoader, user::User};
 use async_graphql::*;
 use sqlx::{types::time::PrimitiveDateTime, FromRow};
 use uuid::Uuid;

@@ -1,6 +1,6 @@
 use crate::configuration::{DatabaseSettings, Settings};
 use crate::gql::{
-    dataloaders::loader_registry::{get_loaders, LoaderRegistry},
+    dataloaders::{get_loaders, LoaderRegistry},
     QueryRoot, SchemaRoot,
 };
 use actix_cors::Cors;
@@ -100,25 +100,6 @@ pub async fn run(
 ) -> Result<Server, anyhow::Error> {
     // env_logger::init_from_env(env_logger::Env::new().default_filter_or("info"));
     env_logger::init();
-
-    // let configuration = get_configuration().expect("Failed to read configuration");
-
-    // let mut options = PgConnectOptions::from_str(&configuration.database.connection)
-    //     .expect("Failed to create SqlitePoolOptions");
-    // options.log_statements(LevelFilter::Trace);
-    // let pool = Arc::new(PgPool::connect_with(options)
-    //     .await
-    //     .expect("Postgres connection error"));
-    // let pool = Data::new(
-    //     PgPool::connect_with(options)
-    //         .await
-    //         .expect("Postgres connection error"),
-    // );
-
-    // sqlx::migrate!("./migrations")
-    //     .run(&**pool)
-    //     .await
-    //     .expect("Migration error");
 
     let db_pool = Data::new(db_pool);
     let loaders = get_loaders(db_pool.clone()).await;
