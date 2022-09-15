@@ -1,10 +1,12 @@
-use crate::gql::{post::Post, user::User};
+use crate::gql::{dataloaders::loader_registry::LoaderRegistry, post::Post, user::User};
 use actix_web::web::Data;
-use async_graphql::{dataloader::*, *};
+use async_graphql::{dataloader::*, Context, *};
 use itertools::Itertools;
 use sqlx::PgPool;
 use std::collections::HashMap;
 use uuid::Uuid;
+
+pub mod loader_registry;
 
 pub struct PostLoader {
     pool: Data<PgPool>,
@@ -66,5 +68,21 @@ impl Loader<Uuid> for UserLoader {
         .collect();
 
         Ok(users)
+    }
+}
+
+// Sugar that helps make things neater and avoid errors that would only crop up at runtime.
+pub trait ContextExt {
+    fn get_loader<T: anymap::any::Any + Send + Sync>(&self) -> &T;
+    fn db_pool(&self) -> &PgPool;
+}
+
+impl<'a> ContextExt for Context<'a> {
+    fn get_loader<T: anymap::any::Any + Send + Sync>(&self) -> &T {
+        self.data_unchecked::<Data<LoaderRegistry>>().get::<T>()
+    }
+
+    fn db_pool(&self) -> &PgPool {
+        self.data_unchecked::<Data<PgPool>>()
     }
 }

@@ -34,3 +34,4 @@ sqlx = {version = "0.6", features = ["runtime-tokio-rustls", "postgres", "time",
 tokio = "1.21.0"
 tracing = "0.1"
 uuid = {version = "1.1", features = ["serde", "v4"]}
+anymap = "0.12.1"

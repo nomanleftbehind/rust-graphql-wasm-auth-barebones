@@ -1,4 +1,8 @@
-use crate::gql::{dataloaders::UserLoader, post::dataloader::DataLoader, user::User};
+use crate::gql::{
+    dataloaders::{ContextExt, UserLoader},
+    post::dataloader::DataLoader,
+    user::User,
+};
 use async_graphql::*;
 use sqlx::{types::time::PrimitiveDateTime, FromRow};
 use uuid::Uuid;
@@ -18,7 +22,7 @@ pub struct Post {
 #[ComplexObject]
 impl Post {
     async fn user(&self, ctx: &Context<'_>) -> Result<Option<User>> {
-        let loader = ctx.data::<DataLoader<UserLoader>>()?;
+        let loader = ctx.get_loader::<DataLoader<UserLoader>>();
         let user = loader.load_one(self.user_id).await?;
 
         Ok(user)

@@ -1,6 +1,6 @@
 use crate::configuration::{DatabaseSettings, Settings};
 use crate::gql::{
-    dataloaders::{PostLoader, UserLoader},
+    dataloaders::loader_registry::{get_loaders, LoaderRegistry},
     QueryRoot, SchemaRoot,
 };
 use actix_cors::Cors;
@@ -17,7 +17,6 @@ use actix_web::{
 use actix_web_flash_messages::{storage::CookieMessageStore, FlashMessagesFramework};
 use actix_web_lab::respond::Html;
 use async_graphql::{
-    dataloader::DataLoader,
     http::{playground_source, GraphQLPlaygroundConfig},
     EmptyMutation, EmptySubscription, Schema,
 };
@@ -122,6 +121,9 @@ pub async fn run(
     //     .expect("Migration error");
 
     let db_pool = Data::new(db_pool);
+    let loaders = get_loaders(db_pool.clone()).await;
+    let loader_registry_data = Data::new(LoaderRegistry { loaders });
+
     // let email_client = Data::new(email_client);
     let base_url = Data::new(ApplicationBaseUrl(base_url));
     let secret_key = Key::from(hmac_secret.expose_secret().as_bytes());
@@ -132,15 +134,7 @@ pub async fn run(
     let schema = Schema::build(QueryRoot, EmptyMutation, EmptySubscription)
         .extension(async_graphql::extensions::Tracing)
         .limit_complexity(1024)
-        // .data(SessionCookieName(configuration.session_cookie_name.clone()))
-        .data(DataLoader::new(
-            PostLoader::new(db_pool.clone()),
-            tokio::spawn,
-        ))
-        .data(DataLoader::new(
-            UserLoader::new(db_pool.clone()),
-            tokio::spawn,
-        ))
+        .data(loader_registry_data)
         .data(db_pool.clone())
         // .data(email_client.clone())
         .data(base_url.clone())

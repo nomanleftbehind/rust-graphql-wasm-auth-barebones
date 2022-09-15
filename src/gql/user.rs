@@ -6,6 +6,8 @@ use sqlx::FromRow;
 use uuid::Uuid;
 
 use crate::gql::post::Post;
+
+use super::dataloaders::ContextExt;
 // use crate::gql::sql::query_posts_by_user_id;
 // use crate::core::session::UserCredential;
 
@@ -74,7 +76,7 @@ impl User {
     //     Ok(posts)
     // }
     async fn posts(&self, ctx: &Context<'_>) -> Result<Vec<Post>> {
-        let loader = ctx.data::<DataLoader<PostLoader>>()?;
+        let loader = ctx.get_loader::<DataLoader<PostLoader>>();
         let posts = loader.load_one(self.id).await?;
         let result = posts.ok_or_else(|| "Not found".into());
 
