@@ -7,14 +7,14 @@ pub async fn query_user<'e, E: PgExecutor<'e>>(
 ) -> Result<Option<User>, sqlx::Error> {
     let user = match by {
         UserBy::Id(id) => {
-            query_as(r#"SELECT id, email, password_hash, post_signature FROM "user" WHERE id = $1"#)
+            query_as(r#"SELECT id, email, password_hash, post_signature FROM "users" WHERE id = $1"#)
                 .bind(id)
                 .fetch_optional(pool)
                 .await?
         }
         UserBy::Email(email) => {
             query_as(
-                r#"SELECT id, email, password_hash, post_signature FROM "user" WHERE email = $1"#,
+                r#"SELECT id, email, password_hash, post_signature FROM "users" WHERE email = $1"#,
             )
             .bind(email)
             .fetch_optional(pool)

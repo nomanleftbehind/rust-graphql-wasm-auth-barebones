@@ -1,7 +1,7 @@
 use crate::configuration::{DatabaseSettings, Settings};
 use crate::gql::{
     dataloaders::{get_loaders, LoaderRegistry},
-    QueryRoot, SchemaRoot,
+    MutationRoot, QueryRoot, SchemaRoot,
 };
 use actix_cors::Cors;
 use actix_session::{storage::RedisSessionStore, SessionMiddleware};
@@ -18,7 +18,7 @@ use actix_web_flash_messages::{storage::CookieMessageStore, FlashMessagesFramewo
 use actix_web_lab::respond::Html;
 use async_graphql::{
     http::{playground_source, GraphQLPlaygroundConfig},
-    EmptyMutation, EmptySubscription, Schema,
+    EmptySubscription, Schema,
 };
 use async_graphql_actix_web::{GraphQLRequest, GraphQLResponse};
 use secrecy::{ExposeSecret, Secret};
@@ -112,7 +112,7 @@ pub async fn run(
     let message_framework = FlashMessagesFramework::builder(message_store).build();
     let redis_store = RedisSessionStore::new(redis_uri.expose_secret()).await?;
 
-    let schema = Schema::build(QueryRoot, EmptyMutation, EmptySubscription)
+    let schema = Schema::build(QueryRoot, MutationRoot, EmptySubscription)
         .extension(async_graphql::extensions::Tracing)
         .limit_complexity(1024)
         .data(loader_registry_data)

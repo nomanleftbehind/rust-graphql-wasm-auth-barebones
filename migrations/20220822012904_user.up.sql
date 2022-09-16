@@ -1,4 +1,4 @@
-CREATE TABLE "user" (
+CREATE TABLE "users" (
     "id" uuid PRIMARY KEY DEFAULT gen_random_uuid(),
     "email" TEXT UNIQUE NOT NULL,
     "password_hash" TEXT NOT NULL,
@@ -7,7 +7,7 @@ CREATE TABLE "user" (
 );
 
 INSERT INTO
-    "user" ("email", "password_hash")
+    "users" ("email", "password_hash")
 VALUES
     (
         'doma@emissions.com',
@@ -27,7 +27,7 @@ VALUES
 
 CREATE TABLE "post" (
     "id" uuid PRIMARY KEY DEFAULT gen_random_uuid(),
-    "user_id" uuid NOT NULL REFERENCES "user"("id") ON DELETE RESTRICT ON UPDATE CASCADE,
+    "user_id" uuid NOT NULL REFERENCES "users"("id") ON DELETE RESTRICT ON UPDATE CASCADE,
     "body" TEXT NOT NULL,
     "topic" TEXT NOT NULL,
     "rank" INTEGER,
@@ -84,5 +84,5 @@ SELECT
     -- CAST(i."date" AS timestamp without time zone),
     u."id"
 FROM
-    "user" u
+    "users" u
     JOIN "post_ins" i ON i."email" = u."email"
