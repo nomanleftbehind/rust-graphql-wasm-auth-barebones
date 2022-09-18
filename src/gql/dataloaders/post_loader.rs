@@ -35,6 +35,7 @@ impl Loader<Uuid> for PostLoader {
             .map(|(user_id, group)| (user_id, group.collect()))
             .collect();
 
+        // println!("{:?}", &user_posts);
         Ok(user_posts)
     }
 }

@@ -4,7 +4,7 @@ use async_graphql::*;
 use sqlx::{types::time::PrimitiveDateTime, FromRow};
 use uuid::Uuid;
 
-#[derive(SimpleObject, Clone, FromRow)]
+#[derive(SimpleObject, Clone, FromRow, Debug)]
 #[graphql(complex)]
 pub struct Post {
     pub id: Uuid,

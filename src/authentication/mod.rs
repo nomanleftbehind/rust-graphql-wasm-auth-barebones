@@ -1,2 +1,4 @@
+pub mod cookies;
 mod password;
-pub use password::{/* change_password, validate_credentials, AuthError, Credentials, */ register};
+pub mod session;
+pub use password::{register, validate_credentials, Credentials};

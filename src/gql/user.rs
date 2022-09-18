@@ -25,8 +25,9 @@ impl User {
     async fn posts(&self, ctx: &Context<'_>) -> Result<Vec<Post>> {
         let loader = ctx.get_loader::<DataLoader<PostLoader>>();
         let posts = loader.load_one(self.id).await?;
-        let result = posts.ok_or_else(|| "Not found".into());
+        // Need to return empty vector if user has no written posts
+        let result = posts.unwrap_or(vec![]);
 
-        result
+        Ok(result)
     }
 }

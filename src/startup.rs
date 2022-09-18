@@ -27,9 +27,6 @@ use sqlx::PgPool;
 use std::net::TcpListener;
 // use tracing::log::LevelFilter;
 
-#[derive(Clone)]
-pub struct SessionCookieName(pub String);
-
 /// GraphQL endpoint
 #[route("/graphql", method = "GET", method = "POST")]
 async fn graphql(schema: web::Data<SchemaRoot>, req: GraphQLRequest) -> GraphQLResponse {
@@ -66,6 +63,7 @@ impl Application {
             // email_client,
             configuration.application.base_url,
             configuration.application.hmac_secret,
+            configuration.application.session_cookie_name,
             configuration.redis_uri,
         )
         .await?;
@@ -96,6 +94,7 @@ pub async fn run(
     // email_client: EmailClient,
     base_url: String,
     hmac_secret: Secret<String>,
+    session_cookie_name: Secret<String>,
     redis_uri: Secret<String>,
 ) -> Result<Server, anyhow::Error> {
     // env_logger::init_from_env(env_logger::Env::new().default_filter_or("info"));
@@ -120,6 +119,7 @@ pub async fn run(
         // .data(email_client.clone())
         .data(base_url.clone())
         .data(Data::new(HmacSecret(hmac_secret.clone())))
+        .data(Data::new(SessionCookieName(session_cookie_name.clone())))
         .finish();
 
     log::info!("starting HTTP server on port 8080");
@@ -145,3 +145,6 @@ pub async fn run(
 
 #[derive(Clone)]
 pub struct HmacSecret(pub Secret<String>);
+
+#[derive(Clone)]
+pub struct SessionCookieName(pub Secret<String>);
