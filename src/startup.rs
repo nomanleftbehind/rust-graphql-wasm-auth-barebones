@@ -1,5 +1,5 @@
 use crate::configuration::{DatabaseSettings, Settings};
-use crate::gql::{
+use crate::graphql::{
     dataloaders::{get_loaders, LoaderRegistry},
     MutationRoot, QueryRoot,
 };
@@ -29,7 +29,6 @@ pub struct Application {
 impl Application {
     pub async fn build(configuration: Settings) -> Result<Self, anyhow::Error> {
         let connection_pool = get_connection_pool(&configuration.database);
-        // let email_client = configuration.email_client.client();
 
         let address = format!(
             "{}:{}",
@@ -40,7 +39,6 @@ impl Application {
         let server = run(
             listener,
             connection_pool,
-            // email_client,
             configuration.application.base_url,
             configuration.application.hmac_secret,
             configuration.application.session_cookie_name,
@@ -71,7 +69,6 @@ pub struct ApplicationBaseUrl(pub String);
 pub async fn run(
     listener: TcpListener,
     db_pool: PgPool,
-    // email_client: EmailClient,
     base_url: String,
     hmac_secret: Secret<String>,
     session_cookie_name: Secret<String>,
@@ -84,7 +81,6 @@ pub async fn run(
     let loaders = get_loaders(db_pool.clone()).await;
     let loader_registry_data = Data::new(LoaderRegistry { loaders });
 
-    // let email_client = Data::new(email_client);
     let base_url = Data::new(ApplicationBaseUrl(base_url));
     let secret_key = Key::from(hmac_secret.expose_secret().as_bytes());
     let message_store = CookieMessageStore::builder(secret_key.clone()).build();
@@ -97,7 +93,6 @@ pub async fn run(
         .limit_complexity(1024)
         .data(loader_registry_data)
         .data(db_pool.clone())
-        // .data(email_client.clone())
         .data(base_url.clone())
         .data(Data::new(HmacSecret(hmac_secret.clone())))
         .data(Data::new(SessionCookieName(session_cookie_name.clone())))
@@ -110,10 +105,6 @@ pub async fn run(
     let server = HttpServer::new(move || {
         App::new()
             .wrap(message_framework.clone())
-            // .wrap(SessionMiddleware::new(
-            //     redis_store.clone(),
-            //     secret_key.clone(),
-            // ))
             .app_data(web::Data::new(schema.clone()))
             .service(graphql)
             .service(graphql_playground)

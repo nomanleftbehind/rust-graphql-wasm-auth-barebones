@@ -1,5 +1,5 @@
-use crate::gql::SchemaRoot;
-use crate::session::cookie::SessionCookie;
+use crate::authentication::cookie::SessionCookie;
+use crate::graphql::SchemaRoot;
 use actix_web::{get, route, web::Data, Responder};
 use actix_web_lab::respond::Html;
 use async_graphql::http::{playground_source, GraphQLPlaygroundConfig};

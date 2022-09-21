@@ -1,11 +1,8 @@
-use crate::authentication::Credentials;
-use crate::gql::{context::ContextExt, dataloaders::PostLoader, post::Post};
-use argon2::{Argon2, PasswordHash};
+use crate::graphql::{context::ContextExt, dataloaders::PostLoader, post::Post};
 use async_graphql::dataloader::DataLoader;
 use async_graphql::*;
 use serde::{Deserialize, Serialize};
 use sqlx::FromRow;
-use sqlx::PgPool;
 use uuid::Uuid;
 
 #[derive(Debug, OneofObject)]
@@ -36,7 +33,7 @@ impl User {
 }
 
 #[derive(InputObject)]
-/// Input from GQL, consume with login_user() to get a User.
+/// Input from GraphQL, consume with login_user() to get a User.
 pub struct LoginUser {
     pub email: String,
     pub password: String,

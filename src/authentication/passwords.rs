@@ -4,7 +4,7 @@ use argon2::password_hash::SaltString;
 use argon2::{Algorithm, Argon2, Params, PasswordHash, PasswordHasher, PasswordVerifier, Version};
 use secrecy::{ExposeSecret, Secret};
 use sqlx::PgPool;
-use crate::gql::user::User;
+use crate::graphql::user::User;
 
 #[derive(thiserror::Error, Debug)]
 pub enum AuthError {
@@ -114,14 +114,43 @@ fn verify_password_hash(
 //     Ok(())
 // }
 
-fn compute_password_hash(password: Secret<String>) -> Result<Secret<String>, anyhow::Error> {
+// fn compute_password_hash(password: Secret<String>) -> Result<Secret<String>, anyhow::Error> {
+//     let salt = SaltString::generate(&mut rand::thread_rng());
+//     let password_hash = Argon2::new(
+//         Algorithm::Argon2id,
+//         Version::V0x13,
+//         Params::new(15000, 2, 1, None).unwrap(),
+//     )
+//     .hash_password(password.expose_secret().as_bytes(), &salt)?
+//     .to_string();
+//     Ok(Secret::new(password_hash))
+// }
+
+pub async fn register(
+    pool: &PgPool,
+    email: String,
+    password: String,
+) -> Result<User, sqlx::Error> {
     let salt = SaltString::generate(&mut rand::thread_rng());
+    // Match production parameters
     let password_hash = Argon2::new(
         Algorithm::Argon2id,
         Version::V0x13,
         Params::new(15000, 2, 1, None).unwrap(),
     )
-    .hash_password(password.expose_secret().as_bytes(), &salt)?
+    .hash_password(password.as_bytes(), &salt)
+    .unwrap()
     .to_string();
-    Ok(Secret::new(password_hash))
+    let user = sqlx::query_as(
+        r#"INSERT INTO users (email, password_hash)
+        VALUES ($1, $2)
+        RETURNING email, id, password_hash, post_signature;
+        "#,
+    )
+    .bind(email)
+    .bind(password_hash)
+    .fetch_one(pool)
+    .await;
+
+    user
 }

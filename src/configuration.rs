@@ -1,5 +1,3 @@
-// use crate::domain::SubscriberEmail;
-// use crate::email_client::EmailClient;
 use secrecy::{ExposeSecret, Secret};
 use serde_aux::field_attributes::deserialize_number_from_string;
 use sqlx::postgres::{PgConnectOptions, PgSslMode};
@@ -10,7 +8,6 @@ use std::convert::{TryFrom, TryInto};
 pub struct Settings {
     pub database: DatabaseSettings,
     pub application: ApplicationSettings,
-    // pub email_client: EmailClientSettings,
     pub redis_uri: Secret<String>,
 }
 
@@ -56,36 +53,6 @@ impl DatabaseSettings {
         options
     }
 }
-
-// #[derive(serde::Deserialize, Clone)]
-// pub struct EmailClientSettings {
-//     pub base_url: String,
-//     pub sender_email: String,
-//     pub authorization_token: Secret<String>,
-//     #[serde(deserialize_with = "deserialize_number_from_string")]
-//     pub timeout_milliseconds: u64,
-// }
-
-// impl EmailClientSettings {
-//     pub fn client(self) -> EmailClient {
-//         let sender_email = self.sender().expect("Invalid sender email address.");
-//         let timeout = self.timeout();
-//         EmailClient::new(
-//             self.base_url,
-//             sender_email,
-//             self.authorization_token,
-//             timeout,
-//         )
-//     }
-
-//     pub fn sender(&self) -> Result<SubscriberEmail, String> {
-//         SubscriberEmail::parse(self.sender_email.clone())
-//     }
-
-//     pub fn timeout(&self) -> std::time::Duration {
-//         std::time::Duration::from_millis(self.timeout_milliseconds)
-//     }
-// }
 
 pub fn get_configuration() -> Result<Settings, config::ConfigError> {
     let base_path = std::env::current_dir().expect("Failed to determine the current directory");

@@ -1,5 +1,5 @@
-use super::{USER_ID_SESSION_KEY};
-use crate::session::cookie::SessionCookie;
+use super::USER_ID_SESSION_KEY;
+use crate::authentication::cookie::SessionCookie;
 use async_graphql::Error;
 use async_redis_session::RedisSessionStore;
 use async_session::{Session, SessionStore};
@@ -24,11 +24,12 @@ impl<'a> SessionManager<'a> {
 
     // The cookie recognizes the session value does not exist, retuns an error message to the user
     async fn load_session(&self, session_cookie: &SessionCookie) -> Result<Session, Error> {
-        let ay = self.store
+        let ay = self
+            .store
             .load_session(session_cookie.value.clone())
             .await?
             .ok_or_else(|| Error::new("Session not found"));
-            ay
+        ay
     }
 
     /// Get user's id from the Session.

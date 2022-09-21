@@ -1,10 +1,7 @@
-use crate::gql::dataloaders::LoaderRegistry;
-// use async_redis_session::RedisSessionStore;
+use crate::graphql::dataloaders::LoaderRegistry;
+use crate::authentication::{cookie::SessionCookie, SessionManager};
 use actix_web::web::Data;
 use async_graphql::{Context, Error};
-// use hmac::digest::typenum::private::IsLessOrEqualPrivate;
-use crate::session::cookie::SessionCookie;
-use crate::session::SessionManager;
 use async_redis_session::RedisSessionStore;
 use sqlx::PgPool;
 

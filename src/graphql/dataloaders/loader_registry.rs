@@ -1,4 +1,4 @@
-use crate::gql::dataloaders::{PostLoader, UserLoader};
+use crate::graphql::dataloaders::{PostLoader, UserLoader};
 use actix_web::web::Data;
 use anymap::{any::Any, Map};
 use async_graphql::dataloader::DataLoader;

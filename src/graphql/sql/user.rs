@@ -1,4 +1,4 @@
-use crate::gql::user::{User, UserBy};
+use crate::graphql::user::{User, UserBy};
 use sqlx::{query_as, PgExecutor};
 
 pub async fn query_user<'e, E: PgExecutor<'e>>(

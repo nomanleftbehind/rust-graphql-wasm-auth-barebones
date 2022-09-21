@@ -6,11 +6,10 @@ pub mod query_root;
 pub mod context;
 pub mod dataloaders;
 pub mod post;
-pub mod session;
 pub mod sql;
 pub mod user;
 
-pub use query_root::QueryRoot;
 pub use mutation_root::MutationRoot;
+pub use query_root::QueryRoot;
 
 pub type SchemaRoot = Schema<QueryRoot, MutationRoot, EmptySubscription>;

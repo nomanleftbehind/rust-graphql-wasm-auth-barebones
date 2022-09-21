@@ -1,4 +1,4 @@
-use crate::gql::post::Post;
+use crate::graphql::post::Post;
 use actix_web::web::Data;
 use async_graphql::{dataloader::*, *};
 use itertools::Itertools;
