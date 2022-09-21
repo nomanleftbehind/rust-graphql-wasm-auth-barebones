@@ -1,45 +1,25 @@
 use crate::configuration::{DatabaseSettings, Settings};
 use crate::gql::{
     dataloaders::{get_loaders, LoaderRegistry},
-    MutationRoot, QueryRoot, SchemaRoot,
+    MutationRoot, QueryRoot,
 };
+use crate::routes::{graphql, graphql_playground};
 use actix_cors::Cors;
-use actix_session::{storage::RedisSessionStore, SessionMiddleware};
 use actix_web::{
     cookie::Key,
     dev::Server,
-    get,
     middleware::Logger,
-    route,
     web::{self, Data},
-    App, HttpServer, Responder,
+    App, HttpServer,
 };
 use actix_web_flash_messages::{storage::CookieMessageStore, FlashMessagesFramework};
-use actix_web_lab::respond::Html;
-use async_graphql::{
-    http::{playground_source, GraphQLPlaygroundConfig},
-    EmptySubscription, Schema,
-};
-use async_graphql_actix_web::{GraphQLRequest, GraphQLResponse};
+use async_graphql::{EmptySubscription, Schema};
+use async_redis_session::RedisSessionStore;
 use secrecy::{ExposeSecret, Secret};
 use sqlx::postgres::PgPoolOptions;
 use sqlx::PgPool;
 use std::net::TcpListener;
 // use tracing::log::LevelFilter;
-
-/// GraphQL endpoint
-#[route("/graphql", method = "GET", method = "POST")]
-async fn graphql(schema: web::Data<SchemaRoot>, req: GraphQLRequest) -> GraphQLResponse {
-    schema.execute(req.into_inner()).await.into()
-}
-
-/// GraphiQL playground UI
-#[get("/graphiql")]
-async fn graphql_playground() -> impl Responder {
-    Html(playground_source(
-        GraphQLPlaygroundConfig::new("/graphql").subscription_endpoint("/graphql"),
-    ))
-}
 
 pub struct Application {
     port: u16,
@@ -109,7 +89,8 @@ pub async fn run(
     let secret_key = Key::from(hmac_secret.expose_secret().as_bytes());
     let message_store = CookieMessageStore::builder(secret_key.clone()).build();
     let message_framework = FlashMessagesFramework::builder(message_store).build();
-    let redis_store = RedisSessionStore::new(redis_uri.expose_secret()).await?;
+    let redis_store = RedisSessionStore::new(redis_uri.expose_secret().as_str())
+        .expect("Failed to connect to Redis");
 
     let schema = Schema::build(QueryRoot, MutationRoot, EmptySubscription)
         .extension(async_graphql::extensions::Tracing)
@@ -120,6 +101,7 @@ pub async fn run(
         .data(base_url.clone())
         .data(Data::new(HmacSecret(hmac_secret.clone())))
         .data(Data::new(SessionCookieName(session_cookie_name.clone())))
+        .data(redis_store)
         .finish();
 
     log::info!("starting HTTP server on port 8080");
@@ -128,10 +110,10 @@ pub async fn run(
     let server = HttpServer::new(move || {
         App::new()
             .wrap(message_framework.clone())
-            .wrap(SessionMiddleware::new(
-                redis_store.clone(),
-                secret_key.clone(),
-            ))
+            // .wrap(SessionMiddleware::new(
+            //     redis_store.clone(),
+            //     secret_key.clone(),
+            // ))
             .app_data(web::Data::new(schema.clone()))
             .service(graphql)
             .service(graphql_playground)

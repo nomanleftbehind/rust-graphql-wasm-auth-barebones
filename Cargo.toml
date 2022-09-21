@@ -44,3 +44,8 @@ sha2 = "0.10"
 nanoid = "0.4"
 hmac = { version = "0.12", features = ["std"] }
 base64 = "0.13"
+async-session = "3.0.0"
+async-redis-session = "0.2.2"
+async-trait = "0.1.51"
+futures-util = "0.3"
+http = "0.2.4"
