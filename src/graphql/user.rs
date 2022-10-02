@@ -38,31 +38,3 @@ pub struct LoginUser {
     pub email: String,
     pub password: String,
 }
-
-// impl LoginUser {
-//     //log the user in by validating their credentials from the database
-//     pub async fn login_user(
-//         self,
-//         pool: &PgPool,
-//         argon2: &Argon2<'_>,
-//     ) -> Result<Option<Credentials>, Error> {
-//         let cred = sqlx::query_as::<_, Credentials>(
-//             "SELECT id, password_hash FROM users WHERE email = $1",
-//         )
-//         .bind(self.email)
-//         .fetch_optional(pool)
-//         .await?;
-
-//         let user = cred.ok_or_else(|| Error::new("Invalid user"))?;
-
-//         let valid = user.verify_password(argon2, self.password).map_err(|e| {
-//             tracing::info!("Failed to verify password");
-//             e
-//         })?;
-
-//         match valid {
-//             false => Err(Error::new("Invalid password")),
-//             true => Ok(user),
-//         }
-//     }
-// }
