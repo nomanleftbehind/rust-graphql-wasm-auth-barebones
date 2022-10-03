@@ -1,0 +1,16 @@
+query ControllerData($id: ID!, $email: String!) {
+  getUserByEmail(userEmail: $email) {
+    username
+    location
+  }
+  getControllerById(controllerId: $id) {
+    id
+    manufacturer
+    model
+    updatedAt
+    createdBy2 {
+      firstName
+      lastName
+    }
+  }
+}

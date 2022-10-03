@@ -1,0 +1,8 @@
+query AllControllers {
+  allControllers {
+    id
+		createdById
+    manufacturer
+    model
+  }
+}

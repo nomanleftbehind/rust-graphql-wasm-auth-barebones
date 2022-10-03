@@ -1,0 +1,42 @@
+[package]
+authors = ["Doma Sucic <domagoj.sucic1@gmail.com"]
+edition = "2021"
+name = "emissions-app-frontend"
+version = "0.1.0"
+
+[dependencies]
+console_error_panic_hook = "0.1.6"
+wasm-bindgen = "0.2.78"
+wasm-bindgen-futures = "0.4.28"
+wee_alloc = "0.4.5"
+
+yew = "0.19.3"
+yew-router = "0.16.0"
+
+anyhow = "1.0.44"
+graphql_client = "0.11.0"
+serde = {version = "1.0.130", features = ["derive"]}
+serde_json = "1.0.68"
+
+lazy_static = "1.4.0"
+toml = "0.5.8"
+
+gloo = "0.8.0"
+gloo-utils = "0.1"
+http = "0.2.8"
+reqwasm = "0.5"
+web-sys = "0.3"
+
+instant = {version = "0.1", features = ["wasm-bindgen"]}
+log = "0.4"
+rand = {version = "0.8", features = ["small_rng"]}
+wasm-logger = "0.2"
+
+[target.'cfg(target_arch = "wasm32")'.dependencies]
+getrandom = {version = "0.2", features = ["js"]}
+# Need to add this to resolve this error
+# Compiling getrandom v0.2.6
+# error: the wasm32-unknown-unknown target is not supported by default, you may need to enable the "js" feature.
+
+[[bin]]
+name = "emissions_frontend"

@@ -1,0 +1,63 @@
+schema {
+  query: QueryRoot
+  mutation: MutationRoot
+}
+
+# A local datetime without timezone offset.
+#
+# The input/output is a string in ISO 8601 format without timezone, including
+# subseconds. E.g. "2022-01-12T07:30:19.12345".
+scalar LocalDateTime
+
+# Input from GraphQL, consume with login_user() to get a User.
+input LoginUser {
+  email: String!
+  password: String!
+}
+
+type MutationRoot {
+  register(email: String!, password: String!): User!
+  login(loginUser: LoginUser!): UUID!
+  logout: Boolean!
+}
+
+type Post {
+  id: UUID!
+  userId: UUID!
+  body: String!
+  topic: String!
+  rank: Int
+  createdAt: LocalDateTime!
+  updatedAt: LocalDateTime!
+  user: User
+}
+
+type QueryRoot {
+  me: User
+  user(by: UserBy!): User
+  userPosts(limit: Int! = 10, offset: Int! = 0): [Post!]!
+  allUsers(testStr: String!): [User!]!
+}
+
+# A UUID is a unique 128-bit number, stored as 16 octets. UUIDs are parsed as
+# Strings within GraphQL. UUIDs are used to assign unique identifiers to
+# entities without requiring a central allocating authority.
+#
+# # References
+#
+# * [Wikipedia: Universally Unique Identifier](http://en.wikipedia.org/wiki/Universally_unique_identifier)
+# * [RFC4122: A Universally Unique IDentifier (UUID) URN Namespace](http://tools.ietf.org/html/rfc4122)
+scalar UUID
+
+type User {
+  id: UUID!
+  email: String!
+  passwordHash: String!
+  postSignature: String
+  posts: [Post!]!
+}
+
+input UserBy {
+  email: String
+  id: UUID
+}

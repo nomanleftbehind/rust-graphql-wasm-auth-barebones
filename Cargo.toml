@@ -1,63 +1,13 @@
-[package]
-edition = "2021"
-name = "emissionsapp"
-version = "1.0.0"
+[workspace]
+members = ["./server", "./client"]
 
-[lib]
-path = "src/lib.rs"
+resolver = "2"
 
-[[bin]]
-name = "emissionsapp"
-path = "src/main.rs"
+[profile.dev]
+split-debuginfo = "unpacked"
 
-[dependencies]
-actix = "0.13"
-actix-cors = "0.6"
-actix-web = "4"
-actix-web-lab = "0.17"
-
-async-graphql = { version = "4", features = [
-    "default",
-    "dataloader",
-    "time",
-    "tracing",
-    "uuid",
-] }
-async-graphql-actix-web = "4"
-
-env_logger = "0.9"
-log = "0.4"
-
-actix-session = { version = "0.7", features = ["redis-rs-tls-session"] }
-actix-web-flash-messages = { version = "0.4", features = ["cookies"] }
-anyhow = "1"
-config = "0.13"
-itertools = "0.10.3"
-secrecy = { version = "0.8", features = ["serde"] }
-serde = { version = "1", features = ["derive"] }
-serde-aux = "4"
-sqlx = { version = "0.6", default-features = false, features = [
-    "runtime-tokio-rustls",
-    "macros",
-    "postgres",
-    "time",
-    "uuid",
-] }
-tokio = "1.21.0"
-tracing = "0.1"
-uuid = { version = "1.1", features = ["serde", "v4"] }
-anymap = "0.12.1"
-argon2 = { version = "0.4", features = ["std"] }
-thiserror = "1"
-rand = { version = "0.8", features = ["std_rng"] }
-serde_json = "1"
-cookie = { version = "0.16", features = ["secure"] }
-sha2 = "0.10"
-nanoid = "0.4"
-hmac = { version = "0.12", features = ["std"] }
-base64 = "0.13"
-async-session = "3.0.0"
-async-redis-session = "0.2.2"
-async-trait = "0.1.51"
-futures-util = "0.3"
-http = "0.2.4"
+[profile.release]
+# panic = "abort"
+codegen-units = 1
+lto = true
+opt-level = "z"

@@ -1,0 +1,34 @@
+.hero.has-background {
+  position: relative;
+  overflow: hidden;
+}
+.hero-background {
+  position: absolute;
+  object-fit: cover;
+  object-position: bottom;
+  width: 100%;
+  height: 100%;
+}
+.hero-background.is-transparent {
+  opacity: 0.3;
+}
+
+.burger {
+  background-color: transparent;
+  border: none;
+}
+
+.navbar-brand {
+  align-items: center;
+}
+
+.table-test {
+  text-align: center;
+  vertical-align: middle;
+}
+
+.table-test > * > * > * {
+  border: 1px black solid;
+  background-color: yellow;
+  padding: 4px;
+}

@@ -1,0 +1,3 @@
+[serve]
+port = 4001
+open = true

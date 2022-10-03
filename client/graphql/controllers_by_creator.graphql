@@ -1,0 +1,13 @@
+query ControllersByCreatorData($userId: ID!) {
+  getControllersbyAuthor(userId: $userId) {
+    manufacturer
+    model
+    serialNumber
+    function
+    createdAt
+    updatedAt
+    createdBy2 {
+      email
+    }
+  }
+}
