@@ -3,3 +3,5 @@
 .env
 
 /server/configuration/base.yaml
+/client/src/util/common_old.rs
+/client/src/pages/users_struct_component_old.rs

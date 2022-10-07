@@ -1,122 +1,43 @@
-use crate::util::{
-    common::{fetch_gql_data, FetchState},
-    constant::CFG,
-};
-use graphql_client::GraphQLQuery;
-use serde_json::{json, Value};
-use std::fmt::Debug;
-use yew::prelude::*;
-use yew::{html, Component, Context, Html};
+use yew::{function_component, html, prelude::*};
 
-// NaiveDateTime is a custom scalar serialized as string.
-// It has to be defined in the scope where the struct under derive is located, next to the query struct will work.
-type UUID = String;
-
-#[derive(GraphQLQuery)]
-#[graphql(
-    schema_path = "./graphql/schema.graphql",
-    query_path = "./graphql/all_users.graphql",
-    response_derives = "Debug"
-)]
-struct AllUsers;
-
-async fn query_str(whatever: String) -> String {
-    let build_query = AllUsers::build_query(all_users::Variables { whatever });
-    let query = json!(build_query);
-
-    query.to_string()
-}
-
-pub enum Msg {
-    SetState(FetchState<Value>),
-    GetData,
-}
+use crate::hooks::use_query::use_query;
+use crate::hooks::{all_users, AllUsers};
 
 #[derive(Clone, Debug, Eq, PartialEq, Properties)]
-pub struct Props {
+pub struct UserProps {
     pub whatever: String,
 }
 
-pub struct Users {
-    data: FetchState<Value>,
-}
+#[function_component(Users)]
+pub fn user_list(UserProps { whatever }: &UserProps) -> Html {
+    let variables = all_users::Variables {
+        whatever: whatever.to_string(),
+    };
+    let get_all_users = use_query::<AllUsers>(variables);
 
-impl Component for Users {
-    type Message = Msg;
-    type Properties = Props;
-
-    fn create(_ctx: &Context<Self>) -> Self {
-        Self {
-            data: FetchState::NotFetching,
-        }
+    if get_all_users.data.is_none() {
+        return html! {
+            <>
+                <h1>{"Query Failed!"}</h1>
+            </>
+        };
     }
-
-    fn view(&self, _ctx: &Context<Self>) -> Html {
-        match &self.data {
-            FetchState::NotFetching => html! { "NotFetching" },
-            FetchState::Fetching => html! { "Fetching" },
-            FetchState::Success(users_data) => view_users(users_data),
-            FetchState::Failed(err) => html! { err },
-        }
-    }
-
-    fn rendered(&mut self, ctx: &Context<Self>, first_render: bool) {
-        if first_render {
-            ctx.link().send_message(Msg::GetData);
-        }
-    }
-
-    fn update(&mut self, ctx: &Context<Self>, msg: Self::Message) -> bool {
-        match msg {
-            Msg::SetState(fetch_state) => {
-                self.data = fetch_state;
-
-                true
+    let users = get_all_users
+        .data
+        .unwrap()
+        .all_users
+        .into_iter().enumerate()
+        .map(|(i, user)| {
+            html! {
+                <tr>
+                    <td> { i + 1 } </td>
+                    <td> { user.id } </td>
+                    <td> { user.email } </td>
+                    <td> { user.post_signature.unwrap_or("".to_string()) /*use unwrap_or because this is optional field*/} </td>
+                    <td> { user.password_hash } </td>
+                </tr>
             }
-            Msg::GetData => {
-                let props = ctx.props().clone();
-                ctx.link().send_future(async {
-                    match fetch_gql_data(&query_str(props.whatever).await).await {
-                        Ok(data) => Msg::SetState(FetchState::Success(data)),
-                        Err(err) => Msg::SetState(FetchState::Failed(err)),
-                    }
-                });
-
-                ctx.link().send_message(Msg::SetState(FetchState::Fetching));
-
-                false
-            }
-        }
-    }
-
-    fn changed(&mut self, ctx: &Context<Self>) -> bool {
-        ctx.link().send_message(Msg::GetData);
-
-        false
-    }
-}
-
-fn view_users(users_data: &Value) -> Html {
-    let document = gloo_utils::document();
-    document.set_title(&format!(
-        "{} - {}",
-        CFG.get("site.title").unwrap(),
-        "Articles"
-    ));
-
-    let users_vec = users_data["allUsers"].as_array().unwrap();
-    let users = users_vec.iter().enumerate().map(|(i, user)| {
-        html! {
-            <tr>
-                <td> { i + 1 } </td>
-                <td> { user["id"].as_str().unwrap() } </td>
-                <td> { user["email"].as_str().unwrap() } </td>
-                <td> { user["postSignature"].as_str().unwrap_or("") /*use unwrap_or because this is optiona field*/} </td>
-                <td> { user["passwordHash"].as_str().unwrap() } </td>
-                // <td> { user["posts"]["body"].as_str().unwrap() } </td>
-            </tr>
-        }
-    });
+        });
 
     html! {
         <>

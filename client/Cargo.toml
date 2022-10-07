@@ -12,11 +12,13 @@ wee_alloc = "0.4.5"
 
 yew = "0.19.3"
 yew-router = "0.16.0"
+yew-hooks = "0.1.56"
 
 anyhow = "1.0.44"
 graphql_client = "0.11.0"
-serde = {version = "1.0.130", features = ["derive"]}
+serde = { version = "1.0.130", features = ["derive"] }
 serde_json = "1.0.68"
+thiserror = "1"
 
 lazy_static = "1.4.0"
 toml = "0.5.8"
@@ -27,13 +29,14 @@ http = "0.2.8"
 reqwasm = "0.5"
 web-sys = "0.3"
 
-instant = {version = "0.1", features = ["wasm-bindgen"]}
+instant = { version = "0.1", features = ["wasm-bindgen"] }
 log = "0.4"
-rand = {version = "0.8", features = ["small_rng"]}
+rand = { version = "0.8", features = ["small_rng"] }
 wasm-logger = "0.2"
+reqwest = { version = "0.11.12", features = ["blocking", "json"] }
 
 [target.'cfg(target_arch = "wasm32")'.dependencies]
-getrandom = {version = "0.2", features = ["js"]}
+getrandom = { version = "0.2", features = ["js"] }
 # Need to add this to resolve this error
 # Compiling getrandom v0.2.6
 # error: the wasm32-unknown-unknown target is not supported by default, you may need to enable the "js" feature.
