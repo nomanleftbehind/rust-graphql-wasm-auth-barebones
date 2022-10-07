@@ -1,5 +1,4 @@
-use crate::util::common::build_request;
-use crate::util::console_log::console_log;
+use crate::util::{common::build_request, console_log::console_log};
 use graphql_client::{GraphQLQuery, Response};
 use serde_json::json;
 use wasm_bindgen_futures::spawn_local;

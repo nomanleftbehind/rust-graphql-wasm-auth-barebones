@@ -1,7 +1,5 @@
+use crate::hooks::{all_users, use_query::use_query, AllUsers};
 use yew::{function_component, html, prelude::*};
-
-use crate::hooks::use_query::use_query;
-use crate::hooks::{all_users, AllUsers};
 
 #[derive(Clone, Debug, Eq, PartialEq, Properties)]
 pub struct UserProps {
@@ -9,7 +7,7 @@ pub struct UserProps {
 }
 
 #[function_component(Users)]
-pub fn user_list(UserProps { whatever }: &UserProps) -> Html {
+pub fn users(UserProps { whatever }: &UserProps) -> Html {
     let variables = all_users::Variables {
         whatever: whatever.to_string(),
     };
