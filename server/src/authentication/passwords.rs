@@ -1,10 +1,10 @@
+use crate::graphql::user::User;
 use crate::telemetry::spawn_blocking_with_tracing;
 use anyhow::Context;
 use argon2::password_hash::SaltString;
 use argon2::{Algorithm, Argon2, Params, PasswordHash, PasswordHasher, PasswordVerifier, Version};
 use secrecy::{ExposeSecret, Secret};
 use sqlx::PgPool;
-use crate::graphql::user::User;
 
 #[derive(thiserror::Error, Debug)]
 pub enum AuthError {
@@ -14,6 +14,7 @@ pub enum AuthError {
     UnexpectedError(#[from] anyhow::Error),
 }
 
+#[derive(Debug)]
 pub struct Credentials {
     pub email: String,
     pub password: Secret<String>,
@@ -29,7 +30,7 @@ async fn get_stored_credentials(
         SELECT id, email, password_hash, post_signature
         FROM users
         WHERE email = $1
-        "#
+        "#,
     )
     .bind(email)
     .fetch_optional(pool)
@@ -126,11 +127,7 @@ fn verify_password_hash(
 //     Ok(Secret::new(password_hash))
 // }
 
-pub async fn register(
-    pool: &PgPool,
-    email: String,
-    password: String,
-) -> Result<User, sqlx::Error> {
+pub async fn register(pool: &PgPool, email: String, password: String) -> Result<User, sqlx::Error> {
     let salt = SaltString::generate(&mut rand::thread_rng());
     // Match production parameters
     let password_hash = Argon2::new(

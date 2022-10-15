@@ -6,11 +6,14 @@ use crate::pages::{
     author_list::AuthorList, /*controller::Controller, controllers::Controllers,*/ home::Home,
     page_not_found::PageNotFound, post_list::PostList, users::Users,
 };
+use crate::pages::login::Login;
 
 #[derive(Routable, PartialEq, Clone, Debug)]
 pub enum Route {
     #[at("/")]
     Home,
+    #[at("/login")]
+    Login,
     #[at("/posts")]
     Posts,
     #[at("/authors")]
@@ -51,6 +54,9 @@ pub fn app() -> Html {
 
 fn switch(routes: &Route) -> Html {
     match routes {
+        Route::Login => {
+            html! { <Login /> }
+        }
         Route::Posts => {
             html! { <PostList /> }
         }

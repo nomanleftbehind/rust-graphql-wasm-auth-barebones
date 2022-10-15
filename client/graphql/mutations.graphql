@@ -1,0 +1,3 @@
+mutation LoginUser($login: LoginUser!) {
+  login(loginUser: $login)
+}

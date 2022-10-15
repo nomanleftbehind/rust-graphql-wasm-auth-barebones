@@ -48,6 +48,9 @@ impl MutationRoot {
             .set_cookie(ctx)
             .await?;
 
+        // let session_manager2 = ctx.get_session_manager()?;
+        // println!("login user: {:?}", &session_manager2);
+
         Ok(user_id)
     }
 

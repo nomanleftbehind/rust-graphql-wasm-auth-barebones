@@ -13,3 +13,12 @@ type UUID = String;
     response_derives = "Debug, Clone, PartialEq"
 )]
 pub struct AllUsers;
+
+#[derive(GraphQLQuery)]
+#[graphql(
+    schema_path = "./graphql/schema.graphql",
+    query_path = "./graphql/mutations.graphql",
+    response_derives = "Clone, PartialEq, Debug"
+)]
+#[derive(Debug)]
+pub struct LoginUser;

@@ -11,6 +11,7 @@ pub fn users(UserProps { whatever }: &UserProps) -> Html {
     let variables = all_users::Variables {
         whatever: whatever.to_string(),
     };
+    // let asjh = AllUsers::build_query(variables;)
     let get_all_users = use_query::<AllUsers>(variables);
 
     if get_all_users.data.is_none() {

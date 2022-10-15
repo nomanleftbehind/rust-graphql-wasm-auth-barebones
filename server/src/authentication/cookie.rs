@@ -9,6 +9,7 @@ use std::future::{ready, Ready};
 
 use super::AUTH_COOKIE_NAME;
 
+#[derive(Debug)]
 pub struct SessionCookie {
     pub value: String,
 }
@@ -22,6 +23,7 @@ impl FromRequest for SessionCookie {
     type Future = Ready<Result<Self, Self::Error>>;
 
     fn from_request(req: &HttpRequest, _payload: &mut Payload) -> Self::Future {
+        println!("req: {:?}", req);
         let session_cookie = req
             .cookie(AUTH_COOKIE_NAME)
             .map(|cookie| {

@@ -103,12 +103,16 @@ pub async fn run(
     log::info!("GraphiQL playground: http://localhost:8080/graphiql");
 
     let server = HttpServer::new(move || {
+        let cors = Cors::permissive();
+            // .allowed_origin("http://localhost:8080")
+            // .allowed_origin("http://localhost:4001");
+
         App::new()
             .wrap(message_framework.clone())
             .app_data(web::Data::new(schema.clone()))
             .service(graphql)
             .service(graphql_playground)
-            .wrap(Cors::permissive())
+            .wrap(cors)
             .wrap(Logger::default())
     })
     .listen(listener)?

@@ -1,5 +1,5 @@
 [gql]
-addr = "localhost"
+addr = "127.0.0.1"
 path = "graphql"
 port = 8080
 

@@ -5,6 +5,7 @@ use async_redis_session::RedisSessionStore;
 use async_session::{Session, SessionStore};
 use uuid::Uuid;
 
+#[derive(Debug)]
 pub struct SessionManager<'a> {
     store: &'a RedisSessionStore,
 }

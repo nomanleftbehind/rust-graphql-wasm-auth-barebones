@@ -32,7 +32,7 @@ impl User {
     }
 }
 
-#[derive(InputObject)]
+#[derive(InputObject, Debug)]
 /// Input from GraphQL, consume with login_user() to get a User.
 pub struct LoginUser {
     pub email: String,
