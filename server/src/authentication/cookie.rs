@@ -1,6 +1,5 @@
 use crate::utils::SessionTokenExtractorError;
-use actix_web::dev::Payload;
-use actix_web::{FromRequest, HttpRequest};
+use actix_web::{dev::Payload, FromRequest, HttpRequest};
 use async_graphql::{Context, Error};
 use async_redis_session::RedisSessionStore;
 use async_session::{Session, SessionStore};
@@ -23,7 +22,6 @@ impl FromRequest for SessionCookie {
     type Future = Ready<Result<Self, Self::Error>>;
 
     fn from_request(req: &HttpRequest, _payload: &mut Payload) -> Self::Future {
-        println!("req: {:?}", req);
         let session_cookie = req
             .cookie(AUTH_COOKIE_NAME)
             .map(|cookie| {
@@ -45,7 +43,7 @@ impl SessionCookie {
     pub async fn set_cookie(&self, ctx: &Context<'_>) -> Result<(), Error> {
         ctx.append_http_header(
             SET_COOKIE,
-            format!("{}={}; SameSite=Lax", AUTH_COOKIE_NAME, self.value),
+            format!("{}={}; SameSite=None; Secure", AUTH_COOKIE_NAME, self.value),
         );
 
         Ok(())

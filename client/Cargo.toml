@@ -33,7 +33,7 @@ instant = { version = "0.1", features = ["wasm-bindgen"] }
 log = "0.4"
 rand = { version = "0.8", features = ["small_rng"] }
 wasm-logger = "0.2"
-reqwest = { version = "0.11.12", features = ["blocking", "json", "cookies"] }
+reqwest = { version = "0.11", features = ["blocking", "json", "cookies"] }
 
 [target.'cfg(target_arch = "wasm32")'.dependencies]
 getrandom = { version = "0.2", features = ["js"] }

@@ -104,8 +104,6 @@ pub async fn run(
 
     let server = HttpServer::new(move || {
         let cors = Cors::permissive();
-            // .allowed_origin("http://localhost:8080")
-            // .allowed_origin("http://localhost:4001");
 
         App::new()
             .wrap(message_framework.clone())

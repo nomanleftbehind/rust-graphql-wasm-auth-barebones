@@ -16,8 +16,10 @@ pub async fn build_request(request_json: &Value) -> Result<Response, Error> {
     let url = format!("http://{}:{}/{}", addr, port, path);
     let response = reqwest::Client::new()
         .post(url)
-        .header(reqwest::header::ACCESS_CONTROL_ALLOW_CREDENTIALS, "true")
         .json(request_json)
+        // Compiles but shows as error
+        // Implement this when stabilized: https://doc.rust-lang.org/cargo/reference/unstable.html#per-package-targets
+        .fetch_credentials_include()
         .send()
         .await;
 
