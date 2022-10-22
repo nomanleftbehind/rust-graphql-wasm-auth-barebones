@@ -1,4 +1,8 @@
-use crate::hooks::{all_users, use_query, AllUsers};
+use crate::{
+    components::msg_ctx::UserContext,
+    hooks::{all_users, use_query, AllUsers},
+    util::console_log::console_log,
+};
 use yew::{function_component, html, prelude::*};
 
 #[derive(Clone, Debug, Eq, PartialEq, Properties)]
@@ -8,6 +12,9 @@ pub struct UserProps {
 
 #[function_component(Users)]
 pub fn users(UserProps { whatever }: &UserProps) -> Html {
+    let user = use_context::<UserContext>().expect("no ctx found");
+    console_log!("current user: {:?}", user);
+
     let variables = all_users::Variables {
         whatever: whatever.to_string(),
     };

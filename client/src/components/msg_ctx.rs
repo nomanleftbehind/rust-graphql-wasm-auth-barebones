@@ -1,23 +1,15 @@
-use crate::hooks::{
-    lazy_function,
-    me::{MeMe, Variables},
-    Me,
+use crate::{
+    hooks::{
+        lazy_function,
+        me::{MeMe, Variables},
+        Me,
+    },
+    util::console_log::console_log,
 };
-use crate::util::console_log::console_log;
-use serde::{Deserialize, Serialize};
 use wasm_bindgen_futures::spawn_local;
 use yew::prelude::*;
 
-#[derive(Serialize, Deserialize, Debug, PartialEq, Eq, Clone)]
-pub struct Message {
-    pub inner: Option<MeMe>,
-}
-
-#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, Eq)]
-pub struct UserInfo {
-    pub id: String,
-    pub email: String,
-}
+pub type UserContext = Option<MeMe>;
 
 #[derive(Properties, Debug, PartialEq)]
 pub struct Props {
@@ -25,27 +17,26 @@ pub struct Props {
     pub children: Children,
 }
 
-#[function_component(MessageProvider)]
-pub fn message_provider(props: &Props) -> Html {
-    let ctx = use_state(|| Message { inner: None });
+#[function_component(UserContextProvider)]
+pub fn user_context(props: &Props) -> Html {
+    let ctx = use_state(|| None);
 
     let effect_ctx = ctx.clone();
 
     use_effect_with_deps(
-        move |asd| {
-            console_log!("asd: {:?}", &asd);
-
+        move |_| {
             spawn_local(async move {
                 let variables = Variables;
-
                 let me = lazy_function::<Me>(variables).await;
-                console_log!("vars: {:?}", &me);
 
                 match me.data {
-                    Some(x) => {
-                        console_log!("{:?}", &x.me);
-                        effect_ctx.set(Message { inner: x.me })
-                    }
+                    Some(res) => match res.me {
+                        Some(user) => {
+                            console_log!("{:?}", &user);
+                            effect_ctx.set(Some(user))
+                        }
+                        None => (),
+                    },
                     None => (),
                 };
             });
@@ -55,8 +46,8 @@ pub fn message_provider(props: &Props) -> Html {
     );
 
     html! {
-        <ContextProvider<Message> context={(*ctx).clone()}>
+        <ContextProvider<UserContext> context={(*ctx).clone()}>
             {props.children.clone()}
-        </ContextProvider<Message>>
+        </ContextProvider<UserContext>>
     }
 }

@@ -1,13 +1,9 @@
-use crate::components::msg_ctx::MessageProvider;
+use crate::components::{msg_ctx::UserContextProvider, nav::Nav};
+use crate::pages::{
+    home::Home, login::Login, page_not_found::PageNotFound, post_list::PostList, users::Users,
+};
 use yew::prelude::*;
 use yew_router::prelude::*;
-
-use crate::components::nav::Nav;
-use crate::pages::login::Login;
-use crate::pages::{
-    /*controller::Controller, controllers::Controllers,*/ home::Home,
-    page_not_found::PageNotFound, post_list::PostList, users::Users,
-};
 
 #[derive(Routable, PartialEq, Clone, Debug)]
 pub enum Route {
@@ -27,7 +23,7 @@ pub enum Route {
 #[function_component(App)]
 pub fn app() -> Html {
     html! {
-        <MessageProvider>
+        <UserContextProvider>
             <BrowserRouter>
                 <Nav />
 
@@ -45,7 +41,7 @@ pub fn app() -> Html {
                     </div>
                 </footer>
             </BrowserRouter>
-        </MessageProvider>
+        </UserContextProvider>
     }
 }
 

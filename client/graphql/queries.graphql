@@ -4,3 +4,12 @@ query Me {
     email
   }
 }
+
+query AllUsers($whatever: String!) {
+  allUsers(testStr: $whatever) {
+    id
+    email
+    postSignature
+    passwordHash
+  }
+}
