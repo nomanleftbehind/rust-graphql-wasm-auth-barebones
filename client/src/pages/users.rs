@@ -1,4 +1,4 @@
-use crate::hooks::{all_users, use_query::use_query, AllUsers};
+use crate::hooks::{all_users, use_query, AllUsers};
 use yew::{function_component, html, prelude::*};
 
 #[derive(Clone, Debug, Eq, PartialEq, Properties)]

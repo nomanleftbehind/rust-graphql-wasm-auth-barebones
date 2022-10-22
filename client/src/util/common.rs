@@ -25,3 +25,23 @@ pub async fn build_request(request_json: &Value) -> Result<Response, Error> {
 
     response
 }
+
+// pub async fn fetch_gql_data(query: &str) -> Result<Value, FetchError> {
+//     let mut req_opts = RequestInit::new();
+//     req_opts.method("POST");
+//     req_opts.body(Some(&JsValue::from_str(query)));
+//     req_opts.mode(RequestMode::Cors);
+
+//     let request = Request::new_with_str_and_init(&gql_uri().await, &req_opts)?;
+
+//     let window = gloo_utils::window();
+//     let resp_value =
+//         JsFuture::from(window.fetch_with_request(&request)).await?;
+//     let resp: Response = resp_value.dyn_into().unwrap();
+//     let resp_text = JsFuture::from(resp.text()?).await?;
+
+//     let data_str = resp_text.as_string().unwrap();
+//     let data_value: Value = from_str(&data_str).unwrap();
+
+//     Ok(data_value["data"].clone())
+// }

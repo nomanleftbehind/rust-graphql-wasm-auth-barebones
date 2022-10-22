@@ -48,8 +48,8 @@ pub fn nav() -> Html {
                             { "More" }
                         </div>
                         <div class="navbar-dropdown">
-                            <Link<Route> classes={classes!("navbar-item")} to={Route::Authors}>
-                                { "Meet the authors" }
+                            <Link<Route> classes={classes!("navbar-item")} to={Route::Login}>
+                                { "Login" }
                             </Link<Route>>
                         </div>
                     </div>
