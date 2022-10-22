@@ -1,3 +1,7 @@
 mutation LoginUser($login: LoginUser!) {
   login(loginUser: $login)
 }
+
+mutation LogoutUser {
+  logout
+}

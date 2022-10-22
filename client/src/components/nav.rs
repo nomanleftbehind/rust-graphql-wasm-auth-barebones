@@ -1,3 +1,4 @@
+use crate::components::{logout::Logout, msg_ctx::UserContext};
 use yew::prelude::*;
 use yew_router::prelude::*;
 
@@ -16,6 +17,8 @@ pub fn nav() -> Html {
     };
 
     let active_class = if !*navbar_active { "is-active" } else { "" };
+
+    let user = use_context::<UserContext>().expect("no ctx found");
 
     html! {
         <nav class="navbar is-primary" role="navigation" aria-label="main navigation">
@@ -42,17 +45,22 @@ pub fn nav() -> Html {
                     <Link<Route> classes={classes!("navbar-item")} to={Route::Users {whatever: "kasld".to_string()}}>
                         { "Users" }
                     </Link<Route>>
+                    <Link<Route> classes={classes!("navbar-item")} to={Route::Login}>
+                        { "Login" }
+                    </Link<Route>>
 
-                    <div class="navbar-item has-dropdown is-hoverable">
-                        <div class="navbar-link">
-                            { "More" }
+                    if let Some(u) = user {
+                        <div class="navbar-item has-dropdown is-hoverable">
+                            <div class="navbar-link">
+                                { u.email }
+                            </div>
+                            <div class="navbar-dropdown">
+                                <div classes={classes!("navbar-item")}>
+                                    <Logout/>
+                                </div>
+                            </div>
                         </div>
-                        <div class="navbar-dropdown">
-                            <Link<Route> classes={classes!("navbar-item")} to={Route::Login}>
-                                { "Login" }
-                            </Link<Route>>
-                        </div>
-                    </div>
+                    }
                 </div>
             </div>
         </nav>

@@ -1,4 +1,8 @@
-use crate::hooks::{login_user, lazy_function, LoginUser};
+use crate::hooks::{
+    lazy_function,
+    login_user::{LoginUser as LoginUserInput, Variables},
+    LoginUser,
+};
 use crate::util::console_log::console_log;
 use wasm_bindgen_futures::spawn_local;
 use web_sys::HtmlInputElement;
@@ -19,13 +23,13 @@ pub fn login() -> Html {
             let new_email = new_email.clone();
             let new_password = new_password.clone();
             spawn_local(async move {
-                let variables = login_user::Variables {
-                    login: login_user::LoginUser {
+                let vars = Variables {
+                    login: LoginUserInput {
                         email: new_email.to_string(),
                         password: new_password.to_string(),
                     },
                 };
-                lazy_function::<LoginUser>(variables).await;
+                lazy_function::<LoginUser>(vars).await;
             })
         })
     };

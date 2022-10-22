@@ -34,3 +34,12 @@ pub struct LoginUser;
 )]
 #[derive(Debug)]
 pub struct Me;
+
+#[derive(GraphQLQuery)]
+#[graphql(
+    schema_path = "./graphql/schema.graphql",
+    query_path = "./graphql/mutations.graphql",
+    response_derives = "Debug, Clone, PartialEq"
+)]
+#[derive(Debug)]
+pub struct LogoutUser;
