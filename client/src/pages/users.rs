@@ -32,15 +32,17 @@ pub fn users(UserProps { whatever }: &UserProps) -> Html {
         .data
         .unwrap()
         .all_users
-        .into_iter().enumerate()
+        .into_iter()
+        .enumerate()
         .map(|(i, user)| {
             html! {
                 <tr>
                     <td> { i + 1 } </td>
                     <td> { user.id } </td>
                     <td> { user.email } </td>
-                    <td> { user.post_signature.unwrap_or("".to_string()) /*use unwrap_or because this is optional field*/} </td>
-                    <td> { user.password_hash } </td>
+                    <td> { user.password } </td>
+                    <td> { user.first_name } </td>
+                    <td> { user.last_name } </td>
                 </tr>
             }
         });
@@ -54,8 +56,9 @@ pub fn users(UserProps { whatever }: &UserProps) -> Html {
                         <th> { "Index" } </th>
                         <th> { "Id" } </th>
                         <th> { "Email" } </th>
-                        <th> { "Post Signature" } </th>
-                        <th> { "Password Hash" } </th>
+                        <th> { "Password" } </th>
+                        <th> { "First Name" } </th>
+                        <th> { "Last Name" } </th>
                     </tr>
                 </thead>
                 <tbody>

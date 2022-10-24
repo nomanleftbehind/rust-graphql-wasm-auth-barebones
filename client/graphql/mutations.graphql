@@ -1,5 +1,14 @@
-mutation LoginUser($login: LoginUser!) {
-  login(loginUser: $login)
+mutation RegisterUser($registerUserInput: RegisterUserInput!) {
+  register(registerUserInput: $registerUserInput) {
+    id
+    email
+    password
+    firstName
+  }
+}
+
+mutation LoginUser($loginUserInput: LoginUserInput!) {
+  login(loginUserInput: $loginUserInput)
 }
 
 mutation LogoutUser {

@@ -1,3 +1,3 @@
 -- Add down migration script here
-DROP TABLE "post";
+DROP TABLE "posts";
 DROP TABLE "users";

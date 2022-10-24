@@ -1,8 +1,7 @@
-use crate::authentication::AUTH_COOKIE_NAME;
-use crate::authentication::{register, validate_credentials, Credentials};
+use crate::authentication::{register, validate_credentials, Credentials, AUTH_COOKIE_NAME};
 use crate::graphql::{
     context::ContextExt,
-    user::{LoginUser, User},
+    user::{LoginUserInput, RegisterUserInput, User},
 };
 use ::http::header::SET_COOKIE;
 use async_graphql::*;
@@ -17,21 +16,29 @@ pub struct MutationRoot;
 
 #[Object]
 impl MutationRoot {
-    async fn register(&self, ctx: &Context<'_>, email: String, password: String) -> Result<User> {
+    async fn register(
+        &self,
+        ctx: &Context<'_>,
+        register_user_input: RegisterUserInput,
+    ) -> Result<User> {
         let pool = ctx.db_pool();
 
-        let result = register(pool, email, password).await?;
+        let result = register(pool, register_user_input).await?;
         Ok(result)
     }
 
-    async fn login(&self, ctx: &Context<'_>, login_user: LoginUser) -> Result<Uuid, Error> {
+    async fn login(
+        &self,
+        ctx: &Context<'_>,
+        login_user_input: LoginUserInput,
+    ) -> Result<Uuid, Error> {
         let pool = ctx.db_pool();
 
         if ctx.get_cookie().is_ok() {
             return Err(logged_in_err());
         }
 
-        let LoginUser { email, password } = login_user;
+        let LoginUserInput { email, password } = login_user_input;
 
         let credentials = Credentials {
             email,

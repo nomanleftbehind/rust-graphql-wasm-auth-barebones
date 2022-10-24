@@ -1,4 +1,4 @@
-use crate::graphql::dataloaders::{PostLoader, UserLoader};
+use crate::graphql::dataloaders::{CreatedPostsLoader, UpdatedPostsLoader, UserLoader};
 use actix_web::web::Data;
 use anymap::{any::Any, Map};
 use async_graphql::dataloader::DataLoader;
@@ -25,10 +25,14 @@ pub async fn get_loaders(pool: Data<PgPool>) -> LoaderMap {
 
     let user_by_post_id_loader = DataLoader::new(UserLoader::new(pool.clone()), tokio::spawn);
 
-    let posts_by_user_id_loader = DataLoader::new(PostLoader::new(pool.clone()), tokio::spawn);
+    let posts_by_creator_id_loader =
+        DataLoader::new(CreatedPostsLoader::new(pool.clone()), tokio::spawn);
+    let posts_by_updater_id_loader =
+        DataLoader::new(UpdatedPostsLoader::new(pool.clone()), tokio::spawn);
 
     loaders.insert(user_by_post_id_loader);
-    loaders.insert(posts_by_user_id_loader);
+    loaders.insert(posts_by_creator_id_loader);
+    loaders.insert(posts_by_updater_id_loader);
 
     loaders
 }

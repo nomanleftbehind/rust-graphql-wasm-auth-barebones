@@ -12,7 +12,7 @@ pub async fn query_user<'e, E: PgExecutor<'e>>(
             UserBy::Id(id) => {
                 sqlx::query_as!(
                     User,
-                    r#"SELECT id, email, password_hash, post_signature FROM "users" WHERE id = $1"#,
+                    r#"SELECT id, email, password, first_name, last_name FROM "users" WHERE id = $1"#,
                     id
                 )
                 .fetch_optional(executor)
@@ -20,7 +20,7 @@ pub async fn query_user<'e, E: PgExecutor<'e>>(
             }
             UserBy::Email(email) => sqlx::query_as!(
                 User,
-                r#"SELECT id, email, password_hash, post_signature FROM "users" WHERE email = $1"#,
+                r#"SELECT id, email, password, first_name, last_name FROM "users" WHERE email = $1"#,
                 email
             )
             .fetch_optional(executor)
@@ -37,7 +37,7 @@ pub async fn query_user_posts<'e, E: PgExecutor<'e>>(
 ) -> Result<Vec<Post>, sqlx::Error> {
     let posts = sqlx::query_as!(
         Post,
-        r#"SELECT p.* FROM "post" p WHERE p."user_id" = $1 LIMIT $2 OFFSET $3"#,
+        r#"SELECT p.* FROM "posts" p WHERE p."created_by_id" = $1 LIMIT $2 OFFSET $3"#,
         user_id,
         limit,
         offset
@@ -55,7 +55,7 @@ pub async fn query_user_by_id<'e, E: PgExecutor<'e>>(
 ) -> Result<Option<User>, sqlx::Error> {
     let user = sqlx::query_as!(
         User,
-        r#"SELECT id, email, password_hash, post_signature FROM users WHERE id = $1"#,
+        r#"SELECT id, email, password, first_name, last_name FROM users WHERE id = $1"#,
         user_id
     )
     .fetch_optional(executor)
@@ -71,7 +71,7 @@ pub async fn query_user_by_id<'e, E: PgExecutor<'e>>(
 pub async fn query_all_users<'e, E: PgExecutor<'e>>(executor: E) -> Result<Vec<User>, sqlx::Error> {
     let users = sqlx::query_as!(
         User,
-        r#"SELECT id, email, password_hash, post_signature FROM users"#,
+        r#"SELECT id, email, password, first_name, last_name FROM users"#,
     )
     .fetch_all(executor)
     .await

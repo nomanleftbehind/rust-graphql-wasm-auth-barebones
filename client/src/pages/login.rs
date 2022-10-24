@@ -1,6 +1,6 @@
 use crate::hooks::{
     lazy_function,
-    login_user::{LoginUser as LoginUserInput, Variables},
+    login_user::{LoginUserInput, Variables},
     LoginUser,
 };
 use crate::util::console_log::console_log;
@@ -24,7 +24,7 @@ pub fn login() -> Html {
             let new_password = new_password.clone();
             spawn_local(async move {
                 let vars = Variables {
-                    login: LoginUserInput {
+                    login_user_input: LoginUserInput {
                         email: new_email.to_string(),
                         password: new_password.to_string(),
                     },

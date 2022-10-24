@@ -1,4 +1,4 @@
-use crate::graphql::user::User;
+use crate::graphql::user::{RegisterUserInput, User};
 use crate::telemetry::spawn_blocking_with_tracing;
 use anyhow::Context;
 use argon2::password_hash::SaltString;
@@ -27,7 +27,7 @@ async fn get_stored_credentials(
 ) -> Result<Option<(uuid::Uuid, Secret<String>)>, anyhow::Error> {
     let row = sqlx::query_as::<_, User>(
         r#"
-        SELECT id, email, password_hash, post_signature
+        SELECT id, email, password, first_name, last_name
         FROM users
         WHERE email = $1
         "#,
@@ -36,7 +36,7 @@ async fn get_stored_credentials(
     .fetch_optional(pool)
     .await
     .context("Failed to performed a query to retrieve stored credentials.")?
-    .map(|row| (row.id, Secret::new(row.password_hash)));
+    .map(|row| (row.id, Secret::new(row.password)));
     Ok(row)
 }
 
@@ -97,16 +97,16 @@ fn verify_password_hash(
 //     password: Secret<String>,
 //     pool: &PgPool,
 // ) -> Result<(), anyhow::Error> {
-//     let password_hash = spawn_blocking_with_tracing(move || compute_password_hash(password))
+//     let password = spawn_blocking_with_tracing(move || compute_password_hash(password))
 //         .await?
 //         .context("Failed to hash password")?;
 //     sqlx::query!(
 //         r#"
 //         UPDATE users
-//         SET password_hash = $1
+//         SET password = $1
 //         WHERE id = $2
 //         "#,
-//         password_hash.expose_secret(),
+//         password.expose_secret(),
 //         user_id
 //     )
 //     .execute(pool)
@@ -117,20 +117,28 @@ fn verify_password_hash(
 
 // fn compute_password_hash(password: Secret<String>) -> Result<Secret<String>, anyhow::Error> {
 //     let salt = SaltString::generate(&mut rand::thread_rng());
-//     let password_hash = Argon2::new(
+//     let password = Argon2::new(
 //         Algorithm::Argon2id,
 //         Version::V0x13,
 //         Params::new(15000, 2, 1, None).unwrap(),
 //     )
 //     .hash_password(password.expose_secret().as_bytes(), &salt)?
 //     .to_string();
-//     Ok(Secret::new(password_hash))
+//     Ok(Secret::new(password))
 // }
 
-pub async fn register(pool: &PgPool, email: String, password: String) -> Result<User, sqlx::Error> {
+pub async fn register(
+    pool: &PgPool,
+    RegisterUserInput {
+        email,
+        password,
+        first_name,
+        last_name,
+    }: RegisterUserInput,
+) -> Result<User, sqlx::Error> {
     let salt = SaltString::generate(&mut rand::thread_rng());
     // Match production parameters
-    let password_hash = Argon2::new(
+    let password = Argon2::new(
         Algorithm::Argon2id,
         Version::V0x13,
         Params::new(15000, 2, 1, None).unwrap(),
@@ -139,13 +147,15 @@ pub async fn register(pool: &PgPool, email: String, password: String) -> Result<
     .unwrap()
     .to_string();
     let user = sqlx::query_as(
-        r#"INSERT INTO users (email, password_hash)
-        VALUES ($1, $2)
-        RETURNING email, id, password_hash, post_signature;
+        r#"INSERT INTO users (email, password, first_name, last_name)
+        VALUES ($1, $2, $3, $4)
+        RETURNING email, id, password, first_name, last_name;
         "#,
     )
     .bind(email)
-    .bind(password_hash)
+    .bind(password)
+    .bind(first_name)
+    .bind(last_name)
     .fetch_one(pool)
     .await;
 

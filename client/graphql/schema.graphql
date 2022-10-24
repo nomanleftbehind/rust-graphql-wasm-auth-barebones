@@ -9,27 +9,28 @@ schema {
 # subseconds. E.g. "2022-01-12T07:30:19.12345".
 scalar LocalDateTime
 
-# Input from GraphQL, consume with login_user() to get a User.
-input LoginUser {
+input LoginUserInput {
   email: String!
   password: String!
 }
 
 type MutationRoot {
-  register(email: String!, password: String!): User!
-  login(loginUser: LoginUser!): UUID!
+  register(registerUserInput: RegisterUserInput!): User!
+  login(loginUserInput: LoginUserInput!): UUID!
   logout: Boolean!
 }
 
 type Post {
   id: UUID!
-  userId: UUID!
   body: String!
   topic: String!
   rank: Int
+  createdById: UUID!
   createdAt: LocalDateTime!
+  updatedById: UUID!
   updatedAt: LocalDateTime!
-  user: User
+  creator: User
+  modifier: User
 }
 
 type QueryRoot {
@@ -37,6 +38,13 @@ type QueryRoot {
   user(by: UserBy!): User
   userPosts(limit: Int! = 10, offset: Int! = 0): [Post!]!
   allUsers(testStr: String!): [User!]!
+}
+
+input RegisterUserInput {
+  email: String!
+  password: String!
+  firstName: String!
+  lastName: String!
 }
 
 # A UUID is a unique 128-bit number, stored as 16 octets. UUIDs are parsed as
@@ -52,9 +60,10 @@ scalar UUID
 type User {
   id: UUID!
   email: String!
-  passwordHash: String!
-  postSignature: String
-  posts: [Post!]!
+  password: String!
+  firstName: String!
+  lastName: String!
+  createdPosts: [Post!]!
 }
 
 input UserBy {

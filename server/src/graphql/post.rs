@@ -9,20 +9,28 @@ use uuid::Uuid;
 #[graphql(complex)]
 pub struct Post {
     pub id: Uuid,
-    pub user_id: Uuid,
     pub body: String,
     pub topic: String,
     pub rank: Option<i32>,
+    pub created_by_id: Uuid,
     pub created_at: PrimitiveDateTime,
+    pub updated_by_id: Uuid,
     pub updated_at: PrimitiveDateTime,
 }
 
 #[ComplexObject]
 impl Post {
-    async fn user(&self, ctx: &Context<'_>) -> Result<Option<User>> {
+    async fn creator(&self, ctx: &Context<'_>) -> Result<Option<User>> {
         let loader = ctx.get_loader::<DataLoader<UserLoader>>();
-        let user = loader.load_one(self.user_id).await?;
+        let created_by = loader.load_one(self.created_by_id).await?;
 
-        Ok(user)
+        Ok(created_by)
+    }
+
+    async fn modifier(&self, ctx: &Context<'_>) -> Result<Option<User>> {
+        let loader = ctx.get_loader::<DataLoader<UserLoader>>();
+        let updated_by = loader.load_one(self.updated_by_id).await?;
+
+        Ok(updated_by)
     }
 }

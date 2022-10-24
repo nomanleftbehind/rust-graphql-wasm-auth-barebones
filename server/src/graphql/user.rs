@@ -1,4 +1,8 @@
-use crate::graphql::{context::ContextExt, dataloaders::PostLoader, post::Post};
+use crate::graphql::{
+    context::ContextExt,
+    dataloaders::{CreatedPostsLoader, UpdatedPostsLoader},
+    post::Post,
+};
 use async_graphql::dataloader::DataLoader;
 use async_graphql::*;
 use serde::{Deserialize, Serialize};
@@ -16,16 +20,26 @@ pub enum UserBy {
 pub struct User {
     pub id: Uuid,
     pub email: String,
-    pub password_hash: String,
-    pub post_signature: Option<String>,
+    pub password: String,
+    pub first_name: String,
+    pub last_name: String,
 }
 
 #[ComplexObject]
 impl User {
-    async fn posts(&self, ctx: &Context<'_>) -> Result<Vec<Post>> {
-        let loader = ctx.get_loader::<DataLoader<PostLoader>>();
+    async fn created_posts(&self, ctx: &Context<'_>) -> Result<Vec<Post>> {
+        let loader = ctx.get_loader::<DataLoader<CreatedPostsLoader>>();
         let posts = loader.load_one(self.id).await?;
         // Need to return empty vector if user has no written posts
+        let result = posts.unwrap_or(vec![]);
+
+        Ok(result)
+    }
+
+    async fn updated_posts(&self, ctx: &Context<'_>) -> Result<Vec<Post>> {
+        let loader = ctx.get_loader::<DataLoader<UpdatedPostsLoader>>();
+        let posts = loader.load_one(self.id).await?;
+        // Need to return empty vector if user has no updated posts
         let result = posts.unwrap_or(vec![]);
 
         Ok(result)
@@ -33,8 +47,15 @@ impl User {
 }
 
 #[derive(InputObject, Debug)]
-/// Input from GraphQL, consume with login_user() to get a User.
-pub struct LoginUser {
+pub struct RegisterUserInput {
+    pub email: String,
+    pub password: String,
+    pub first_name: String,
+    pub last_name: String,
+}
+
+#[derive(InputObject, Debug)]
+pub struct LoginUserInput {
     pub email: String,
     pub password: String,
 }
