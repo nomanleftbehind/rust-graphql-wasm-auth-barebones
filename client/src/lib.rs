@@ -1,8 +1,9 @@
 mod app;
 mod components;
-// mod error;
+mod error;
 mod hooks;
 mod pages;
+mod models;
 // mod types;
 mod util;
 

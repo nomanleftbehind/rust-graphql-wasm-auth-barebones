@@ -1,13 +1,12 @@
-use crate::{
-    hooks::{
-        lazy_function,
-        me::{MeMe, Variables},
-        Me,
-    },
-    util::console_log::console_log,
+use crate::models::{
+    me::{MeMe, Variables},
+    Me,
 };
-use wasm_bindgen_futures::spawn_local;
+
 use yew::prelude::*;
+use yew_hooks::{use_async, use_mount};
+
+use crate::hooks::lazy_function_result;
 
 pub type UserContext = Option<MeMe>;
 
@@ -21,29 +20,35 @@ pub struct Props {
 pub fn user_context(props: &Props) -> Html {
     let ctx = use_state(|| None);
 
-    let effect_ctx = ctx.clone();
+    let current_user = use_async(async move {
+        let variables = Variables;
+        let me = lazy_function_result::<Me>(variables).await;
+        me
+    });
 
-    use_effect_with_deps(
-        move |_| {
-            spawn_local(async move {
-                let variables = Variables;
-                let me = lazy_function::<Me>(variables).await;
+    {
+        let current_user = current_user.clone();
+        use_mount(move || {
+            current_user.run();
+        });
+    }
 
-                match me.data {
-                    Some(res) => match res.me {
-                        Some(user) => {
-                            console_log!("{:?}", &user);
-                            effect_ctx.set(Some(user))
+    {
+        let user_ctx = ctx.clone();
+        use_effect_with_deps(
+            move |current_user| {
+                if let Some(user_info) = &current_user.data {
+                    if let Some(data) = user_info.clone() {
+                        if let Some(user) = data.me {
+                            user_ctx.set(Some(user));
                         }
-                        None => (),
-                    },
-                    None => (),
-                };
-            });
-            || ()
-        },
-        (),
-    );
+                    }
+                }
+                || ()
+            },
+            current_user,
+        )
+    }
 
     html! {
         <ContextProvider<UserContext> context={(*ctx).clone()}>

@@ -1,29 +1,30 @@
-use crate::hooks::{logout_user::Variables, LogoutUser};
-use crate::Route;
-use wasm_bindgen_futures::spawn_local;
-use yew::{function_component, html, Callback};
-use yew_router::hooks::use_history;
-use yew_router::prelude::History;
+use crate::{
+    models::{logout_user::Variables, LogoutUser},
+    Route,
+};
+use yew::{classes, function_component, html, Callback};
+use yew_hooks::use_async;
+use yew_router::prelude::Link;
 
-use crate::hooks::lazy_function;
+use crate::hooks::lazy_function_result;
 
 #[function_component(Logout)]
 pub fn logout() -> Html {
-    let history = use_history().unwrap();
+    let state = use_async(async move {
+        let res = lazy_function_result::<LogoutUser>(Variables).await;
+        res
+    });
 
     let onclick = {
-        Callback::once(move |_| {
-            spawn_local(async move {
-                let response = lazy_function::<LogoutUser>(Variables).await;
-
-                if response.data.is_some() {
-                    history.push(Route::Login)
-                }
-            })
+        let state = state.clone();
+        Callback::from(move |_| {
+            state.run();
         })
     };
 
     html! {
-        <button {onclick}> { "Logout" }</button>
+        <Link<Route> classes={classes!("navbar-item")} to={Route::Home}>
+            <button class={ "button is-rounded is-small" } {onclick}> { "Logout" }</button>
+        </Link<Route>>
     }
 }

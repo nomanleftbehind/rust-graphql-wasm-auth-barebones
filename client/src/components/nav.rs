@@ -1,4 +1,7 @@
-use crate::components::{logout::Logout, msg_ctx::UserContext};
+use crate::{
+    components::{logout::Logout, msg_ctx::UserContext},
+    util::console_log::console_log,
+};
 use yew::prelude::*;
 use yew_router::prelude::*;
 
@@ -6,6 +9,30 @@ use crate::Route;
 
 #[function_component(Nav)]
 pub fn nav() -> Html {
+    let user = use_context::<UserContext>().expect("no ctx found");
+
+    let user_clone = user.clone();
+    {
+        use_effect_with_deps(
+            move |seed| {
+                console_log!("current user: {:?}", seed);
+
+                || {}
+            },
+            user_clone,
+        );
+    }
+
+    // let user_cloned = user.clone();
+    // use_effect_with_deps(
+    //     move |_| {
+    //         let user_cloned2 = user_cloned.clone();
+    //         // ...
+    //         || ()
+    //     },
+    //     user_cloned.clone(), // dependents
+    // );
+
     let navbar_active = use_state_eq(|| false);
 
     let toggle_navbar = {
@@ -18,7 +45,7 @@ pub fn nav() -> Html {
 
     let active_class = if !*navbar_active { "is-active" } else { "" };
 
-    let user = use_context::<UserContext>().expect("no ctx found");
+    // let user = use_context::<UserContext>().expect("no ctx found");
 
     html! {
         <nav class="navbar is-primary" role="navigation" aria-label="main navigation">

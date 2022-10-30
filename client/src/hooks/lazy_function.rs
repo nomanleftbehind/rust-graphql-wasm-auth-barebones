@@ -44,3 +44,29 @@ where
         },
     }
 }
+
+pub async fn lazy_function_result<Q>(
+    variables: Q::Variables,
+) -> Result<Option<Q::ResponseData>, crate::error::Error>
+where
+    Q: GraphQLQuery,
+    Q::Variables: 'static,
+    Q::ResponseData: Clone + 'static,
+{
+    let request_body = Q::build_query(variables);
+    let request_json = &json!(request_body);
+    let request = build_request(request_json).await;
+    match request {
+        Ok(response) => {
+            // console_log!("lf: {:?}", &response);
+
+            let json = response.json::<Response<Q::ResponseData>>().await;
+
+            match json {
+                Ok(response) => Ok(response.data),
+                Err(error) => Err(error.into()),
+            }
+        }
+        Err(error) => Err(error.into()),
+    }
+}

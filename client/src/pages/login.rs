@@ -1,9 +1,11 @@
-use crate::hooks::{
-    lazy_function,
-    login_user::{LoginUserInput, Variables},
-    LoginUser,
+use crate::{
+    hooks::lazy_function,
+    models::{
+        login_user::{LoginUserInput, Variables},
+        LoginUser,
+    },
+    util::console_log::console_log,
 };
-use crate::util::console_log::console_log;
 use wasm_bindgen_futures::spawn_local;
 use web_sys::HtmlInputElement;
 use yew::prelude::*;
