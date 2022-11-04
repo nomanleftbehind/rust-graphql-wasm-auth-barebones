@@ -37,7 +37,7 @@ rand = { version = "0.8", features = ["small_rng"] }
 wasm-logger = "0.2"
 reqwest = { version = "0.11", features = ["blocking", "json", "cookies"] }
 
-# [target.'cfg(target_arch = "wasm32")'.dependencies]
+[target.'cfg(target_arch = "wasm32")'.dependencies]
 getrandom = { version = "0.2", features = ["js"] }
 # Need to add this to resolve this error
 # Compiling getrandom v0.2.6
